@@ -1,0 +1,85 @@
+import java.net.*;
+import java.io.*;
+
+public class SERVER extends Thread {
+	private ServerSocket serverSocket;
+	
+int TimeOut =10000;
+int Port =25565;
+int PortCount =30000;
+int clientNum=1;
+DataOutputStream dos;
+DataInputStream dis;
+
+	public SERVER(int port) throws IOException {
+		serverSocket = new ServerSocket(Port);
+		serverSocket.getLocalPort();
+		System.getProperty("os.arch");
+	
+	}
+	public void run() 
+		{
+		dos = null;
+		dis = null;
+		
+		try 
+			{
+			Socket server = serverSocket.accept();
+			dos = new DataOutputStream(server.getOutputStream());
+			dis = new DataInputStream(server.getInputStream());
+			} 
+		catch (IOException e1) 
+			{
+			e1.printStackTrace();
+			}
+
+		try 
+			{
+			System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
+			System.out.println(dis.readUTF());
+			dos.writeUTF("hey can you see this");
+			dos.writeInt(PortCount);
+			System.out.println("Just connected To my BITCHES "+clientNum + "on ports " +PortCount+" and " +PortCount+1 +"!!!");
+			if(dis.readInt() ==1)
+				{
+				PortCount = PortCount +2;
+				clientNum=clientNum+1;
+				System.out.println("Port Count: "+PortCount);
+				newConnection();
+				dis.close();
+				dos.close();
+				run();
+				}
+			else
+				{
+				System.out.println("Something fucked up");
+				}
+			} 
+		catch (SocketTimeoutException s) 
+			{
+			System.out.println("Socket timed out!");
+			} 
+		catch (IOException e) 
+			{
+			e.printStackTrace();
+			}
+		}
+	public void newConnection()
+	{
+		
+	}
+	public static void main(String[] args) 
+		{
+		int port = Integer.parseInt(args[0]);
+		try 
+			{
+			Thread t = new SERVER(port);
+			t.start();
+			} 
+		catch (IOException e) 
+			{
+			e.printStackTrace();
+			}
+		
+		}
+}
